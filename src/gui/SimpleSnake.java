@@ -14,10 +14,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -150,41 +153,76 @@ public class SimpleSnake extends JFrame {
 			int height = visibleRect.height;
 
 			// --- BACKGROUND ---
-			g2d.setColor(Color.DARK_GRAY);
-			g2d.fillRect(x, y, width, height);
-			g2d.setColor(new Color(60, 60, 60));
-			for (int i = 0; i < GAME_SIZE; i++) {
-				for (int j = 0; j < GAME_SIZE; j++) {
-					g2d.drawRect(i * TILE_SIZE, j * TILE_SIZE, 1000, 1000);
+
+			BufferedImage bgImg = null;
+			try {
+				bgImg = ImageIO.read(new File("data/bg_big.jpg"));
+			} catch (Exception e) {
+			}
+			if (bgImg != null) {
+				g2d.drawImage(bgImg, 0, 0, null);
+			} else {
+				g2d.setColor(Color.DARK_GRAY);
+				g2d.fillRect(x, y, width, height);
+				g2d.setColor(new Color(60, 60, 60));
+
+				for (int i = 0; i < GAME_SIZE; i++) {
+					for (int j = 0; j < GAME_SIZE; j++) {
+						g2d.drawRect(i * TILE_SIZE, j * TILE_SIZE, 1000, 1000);
+					}
 				}
 			}
 
 			// --- FOOD ---
 			HashSet<Food> food = game.world().getFood();
+			BufferedImage bonusImg = null;
+			BufferedImage foodImg = null;
+			try {
+				bonusImg = ImageIO.read(new File("data/bonus.png"));
+				foodImg = ImageIO.read(new File("data/food.png"));
+			} catch (Exception e) {
+			}
 			for (Food foodItem : food) {
-				if (foodItem.worth() > 1) {
-					if (foodItem.duration() % 2 != 0)
-						g2d.setColor(new Color(200, 20, 150));
-					else
-						g2d.setColor(new Color(200, 0, 200));
-				} else
-					g2d.setColor(Color.GREEN);
-				g2d.fillRect(foodItem.x() * TILE_SIZE, foodItem.y() * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+				if (foodItem.worth() > 1)
+					g2d.drawImage(bonusImg, foodItem.x() * TILE_SIZE, foodItem.y() * TILE_SIZE, null);
+				else
+					g2d.drawImage(foodImg, foodItem.x() * TILE_SIZE, foodItem.y() * TILE_SIZE, null);
 			}
 
 			// --- BODY ---
+			BufferedImage tailImg = null;
+			BufferedImage fullTailImg = null;
+			try {
+				tailImg = ImageIO.read(new File("data/tail_final.png"));
+				fullTailImg = ImageIO.read(new File("data/fullTail_final.png"));
+			} catch (Exception e) {
+			}
 			for (BodyPiece piece : game.world().snake().getTrail()) {
-				if (piece.isFull())
-					g2d.setColor(Color.LIGHT_GRAY);
-				else
-					g2d.setColor(Color.WHITE);
-				g2d.fillRect(piece.x() * TILE_SIZE, piece.y() * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+				if (tailImg != null && fullTailImg != null) {
+					if (piece.isFull())
+						g2d.drawImage(fullTailImg, piece.x() * TILE_SIZE, piece.y() * TILE_SIZE, null);
+					else
+						g2d.drawImage(tailImg, piece.x() * TILE_SIZE, piece.y() * TILE_SIZE, null);
+
+				}
 			}
 
 			// --- HEAD ---
 			BodyPiece head = game.world().snake().getHead();
-			g2d.setColor(Color.GRAY);
-			g2d.fillRect(head.x() * TILE_SIZE, head.y() * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+			// g2d.setColor(Color.GRAY);
+			// g2d.fillRect(head.x() * TILE_SIZE, head.y() * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+
+			BufferedImage headImg = null;
+			try {
+				headImg = ImageIO.read(new File("data/head_final.jpg"));
+			} catch (Exception e) {
+			}
+			if (headImg != null) {
+				g2d.drawImage(headImg, head.x() * TILE_SIZE, head.y() * TILE_SIZE, TILE_SIZE, TILE_SIZE, null);
+			} else {
+				g2d.setColor(Color.GRAY);
+				g2d.fillRect(head.x() * TILE_SIZE, head.y() * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+			}
 
 			// --- SCORE ---
 			g2d.setColor(Color.BLACK);
@@ -210,10 +248,12 @@ public class SimpleSnake extends JFrame {
 
 				TextLayout layout = new TextLayout("Final Score : " + score, g.getFont(), g2d.getFontRenderContext());
 				Rectangle2D bounds = layout.getBounds();
-				layout.draw(g2d, (float) ((GAME_SIZE * TILE_SIZE - bounds.getWidth()) / 2.0), (float) ((GAME_SIZE * TILE_SIZE + bounds.getHeight()) / 2.0) - TILE_SIZE * 3);
+				layout.draw(g2d, (float) ((GAME_SIZE * TILE_SIZE - bounds.getWidth()) / 2.0),
+						(float) ((GAME_SIZE * TILE_SIZE + bounds.getHeight()) / 2.0) - TILE_SIZE * 3);
 				TextLayout layout2 = new TextLayout("Press SPACE to start again.", g.getFont(), g2d.getFontRenderContext());
 				Rectangle2D bounds2 = layout2.getBounds();
-				layout2.draw(g2d, (float) ((GAME_SIZE * TILE_SIZE - bounds2.getWidth()) / 2.0), (float) ((GAME_SIZE * TILE_SIZE + bounds2.getHeight()) / 2.0) + TILE_SIZE * 3);
+				layout2.draw(g2d, (float) ((GAME_SIZE * TILE_SIZE - bounds2.getWidth()) / 2.0),
+						(float) ((GAME_SIZE * TILE_SIZE + bounds2.getHeight()) / 2.0) + TILE_SIZE * 3);
 			}
 		}
 

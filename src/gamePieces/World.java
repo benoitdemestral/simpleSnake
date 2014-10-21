@@ -16,7 +16,7 @@ public class World {
 	private final int FOOD_BASE_WORTH = 1;
 	private final int FOOD_BONUS_WORTH = 3;
 	private final int FOOD_BASE_DURATION = -1;
-	private final int FOOD_BONUS_DURATION = 20;
+	private final int FOOD_BONUS_DURATION = 30;
 	private Game game;
 
 	public World(int size, Game game) {

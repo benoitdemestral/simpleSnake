@@ -6,7 +6,7 @@ public class Game {
 	private World world;
 	private boolean running = false;
 	public SimpleSnake simpleSnake;
-	private final int BASE_SPEED = 200;
+	private final int BASE_SPEED = 150;
 	private final int MINIMUM_SPEED = 40;
 	private final int SPEED_BOOST = 20;
 	private int nonBoostedSpeed = BASE_SPEED;

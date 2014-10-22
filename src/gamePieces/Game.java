@@ -43,7 +43,12 @@ public class Game {
 			world.update();
 			if (!running)
 				break;
-			simpleSnake.repaint();
+			Thread paintThread = new Thread() {
+				public void run() {
+					simpleSnake.repaint();
+				}
+			};
+			paintThread.start();
 			try {
 				Thread.sleep(speed);
 			} catch (Exception e) {
